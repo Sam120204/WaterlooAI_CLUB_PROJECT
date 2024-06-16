@@ -1,8 +1,3 @@
-Sure! Below is a detailed `README.md` file that includes an overview, instructions on setting up the environment, running the scripts, and additional notes.
-
-**File Name: `README.md`**
-
-```markdown
 # Medical Data Processing and Research
 
 This repository contains scripts for web scraping medical data, researching embedding models, and using a vector database for storing and querying embeddings. The primary focus is on utilizing PubMed and Cochrane as data sources and ChromaDB as the vector database.
@@ -24,12 +19,11 @@ This repository contains scripts for web scraping medical data, researching embe
 
 ### Creating a Virtual Environment (Optional but Recommended)
 
-1. Open a terminal (or command prompt) and navigate to the project directory.
-2. Create a virtual environment:
+1. Create a virtual environment:
    ```sh
    python -m venv myenv
    ```
-3. Activate the virtual environment:
+2. Activate the virtual environment:
    - On macOS/Linux:
      ```sh
      source myenv/bin/activate
@@ -110,11 +104,3 @@ python chromadb_example.py
 
 - Ensure all scripts are run from the project directory where the `requirements.txt` file is located.
 - If you encounter any issues, check for error messages and ensure all required libraries are installed correctly.
-
-## Contact
-
-For any questions or further assistance, please reach out to the project maintainers or collaborators.
-
-```
-
-This `README.md` provides a comprehensive overview of the project, setup instructions, detailed guidance on running the scripts, and notes on research and collaboration. Let me know if you need any further modifications or additional information!
