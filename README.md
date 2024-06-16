@@ -5,10 +5,13 @@ This repository contains scripts for web scraping medical data, researching embe
 ## Contents
 
 - `fetch_pubmed_data.py`: Script for scraping data from PubMed.
-- `research_embedding_models.py`: Script for generating embeddings using BERT.
-- `chromadb_example.py`: Script for inserting and querying data in ChromaDB.
+- `embedding_models.py`: Script for generating embeddings using BERT.
+- `chromadb_store.py`: Script for inserting and querying data in ChromaDB.
+- `check_endpoints.py`: Script for checking the status of ChromaDB endpoints.
 - `requirements.txt`: File listing all dependencies.
 - `research_notes.txt`: Placeholder for personal research notes and observations.
+- `pubmed_data.json`: JSON file containing scraped articles from PubMed.
+- `embeddings.json`: JSON file containing generated embeddings for the articles.
 
 ## Setup Instructions
 
@@ -82,33 +85,48 @@ python fetch_pubmed_data.py
 
 ### 2. Researching Embedding Models
 
-The `research_embedding_models.py` script generates text embeddings using BERT.
+The `embedding_models.py` script generates text embeddings using BERT.
 
 **Running the Script:**
 
 ```sh
-python research_embedding_models.py
+python embedding_models.py
 ```
 
 **Output:**
 
 - The script prints the embeddings for the sample text in the terminal.
 - Ensure you see a tensor output indicating the embeddings were successfully generated.
+- The script creates a file named `embeddings.json` containing the generated embeddings.
 
 ### 3. Using ChromaDB for Vector Storage
 
-The `chromadb_example.py` script demonstrates how to insert and query data in ChromaDB.
+The `chromadb_store.py` script demonstrates how to insert and query data in ChromaDB.
 
 **Running the Script:**
 
 ```sh
-python chromadb_example.py
+python chromadb_store.py
 ```
 
 **Output:**
 
-- The script prints the results of the query in the terminal.
-- The output shows the queried documents with their embeddings and metadata.
+- The script prints the results of the insertion and query in the terminal.
+- The output shows the stored documents with their embeddings and metadata.
+
+### 4. Checking ChromaDB Endpoints
+
+The `check_endpoints.py` script checks the status of the ChromaDB server endpoints.
+
+**Running the Script:**
+
+```sh
+python check_endpoints.py
+```
+
+**Output:**
+
+- The script prints the status codes for each endpoint, indicating whether they are accessible.
 
 ## Research and Collaboration
 
