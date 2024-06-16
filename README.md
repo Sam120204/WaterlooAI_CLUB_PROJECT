@@ -15,6 +15,7 @@ This repository contains scripts for web scraping medical data, researching embe
 ### Prerequisites
 
 - Python 3.x installed on your system.
+- Docker installed on your system.
 - Internet connection for installing dependencies and fetching data.
 
 ### Creating a Virtual Environment (Optional but Recommended)
@@ -40,6 +41,27 @@ Install the necessary libraries using the provided `requirements.txt` file:
 ```sh
 pip install -r requirements.txt
 ```
+
+### Setting Up and Running ChromaDB Server with Docker
+
+1. **Pull the ChromaDB Docker image and run the container:**
+   ```sh
+   docker run -d -p 8000:8000 chromadb/chroma
+   ```
+
+2. **Verify the Docker container is running:**
+   ```sh
+   docker ps
+   ```
+
+   You should see a container running with the `chromadb/chroma` image.
+
+3. **Check the logs to ensure the server is running correctly:**
+   ```sh
+   docker logs <container_id>
+   ```
+
+   Replace `<container_id>` with the ID of the ChromaDB container listed in the output of the `docker ps` command.
 
 ## Running the Scripts
 
@@ -104,3 +126,4 @@ python chromadb_example.py
 
 - Ensure all scripts are run from the project directory where the `requirements.txt` file is located.
 - If you encounter any issues, check for error messages and ensure all required libraries are installed correctly.
+- If you have trouble accessing the ChromaDB server, ensure the Docker container is running and check the logs for any errors.
