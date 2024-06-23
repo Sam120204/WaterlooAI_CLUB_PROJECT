@@ -1,35 +1,89 @@
+# import json
+# import numpy as np
+# from transformers import BertTokenizer, BertModel
+# import torch
+# from Bio import Entrez
+
+# # Load pre-trained model tokenizer (vocabulary)
+# tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+# # Load pre-trained model (weights)
+# model = BertModel.from_pretrained('bert-base-uncased')
+# model.eval()
+
+
+# def fetch_pubmed_data(topic, max_results=100):
+#     Entrez.email = "zhongjiayou1202@gmail.com"  # Always provide your email address when using Entrez
+#     search_handle = Entrez.esearch(db="pubmed", term=topic, retmax=max_results)
+#     search_results = Entrez.read(search_handle)
+#     search_handle.close()
+#     id_list = search_results["IdList"]
+    
+#     fetch_handle = Entrez.efetch(db="pubmed", id=",".join(id_list), rettype="abstract", retmode="xml")
+#     fetched_data = Entrez.read(fetch_handle)
+#     fetch_handle.close()
+    
+#     articles = []
+#     for article in fetched_data["PubmedArticle"]:
+#         title = article["MedlineCitation"]["Article"]["ArticleTitle"]
+#         abstract = article["MedlineCitation"]["Article"].get("Abstract", {}).get("AbstractText", [""])[0]
+#         articles.append({"title": title, "summary": abstract})
+    
+#     return articles
+
+# if __name__ == "__main__":
+#     # Define the topic to search for in PubMed
+#     topic = "machine learning in healthcare"
+    
+#     # Fetch data from PubMed
+#     articles = fetch_pubmed_data(topic)
+    
+#     # Save data to a JSON file
+#     with open('pubmed_data.json', 'w') as f:
+#         json.dump(articles, f)
+    
+#     # Load data
+#     with open('pubmed_data.json', 'r') as f:
+#         data = json.load(f)
+
+#     # Print the number of articles
+#     print(f"Number of articles fetched: {len(data)}")
+
+#     # Combine title and summary for each article
+#     combined_texts = [f"{article['title']} {article.get('summary', '')}" for article in data]
+
 import json
-import numpy as np
-from transformers import BertTokenizer, BertModel
-import torch
+from Bio import Entrez
 
-# Load pre-trained model tokenizer (vocabulary)
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
-# Load pre-trained model (weights)
-model = BertModel.from_pretrained('bert-base-uncased')
-model.eval()
-
-def get_bert_embeddings(texts):
-    embeddings = []
-    with torch.no_grad():
-        for text in texts:
-            # Encode text
-            inputs = tokenizer(text, return_tensors='pt', truncation=True, padding=True, max_length=512)
-            outputs = model(**inputs)
-            # Get the mean pooling of the token embeddings
-            embeddings.append(outputs.last_hidden_state.mean(dim=1).squeeze().numpy())
-    return np.array(embeddings)
+def fetch_pubmed_data(topic, max_results=100):
+    Entrez.email = "zhongjiayou1202@gmail.com"  # Always provide your email address when using Entrez
+    search_handle = Entrez.esearch(db="pubmed", term=topic, retmax=max_results)
+    search_results = Entrez.read(search_handle)
+    search_handle.close()
+    id_list = search_results["IdList"]
+    
+    fetch_handle = Entrez.efetch(db="pubmed", id=",".join(id_list), rettype="abstract", retmode="xml")
+    fetched_data = Entrez.read(fetch_handle)
+    fetch_handle.close()
+    
+    articles = []
+    for article in fetched_data["PubmedArticle"]:
+        title = article["MedlineCitation"]["Article"]["ArticleTitle"]
+        abstract = article["MedlineCitation"]["Article"].get("Abstract", {}).get("AbstractText", [""])[0]
+        articles.append({"title": title, "summary": abstract})
+    
+    return articles
 
 if __name__ == "__main__":
-    # Load data
-    with open('pubmed_data.json', 'r') as f:
-        data = json.load(f)
-
-    articles = [f"{article['title']} {article.get('summary', '')}" for article in data]
-
-    # Generate BERT embeddings
-    bert_embeddings = get_bert_embeddings(articles)
-
-    # Save embeddings to a file
-    np.save("bert_embeddings.npy", bert_embeddings)
+    # Define the topic to search for in PubMed
+    topic = "machine learning in healthcare"
+    
+    # Fetch data from PubMed
+    articles = fetch_pubmed_data(topic)
+    
+    # Save data to a JSON file
+    with open('pubmed_data.json', 'w') as f:
+        json.dump(articles, f)
+    
+    # Print the number of articles
+    print(f"Number of articles fetched: {len(articles)}")

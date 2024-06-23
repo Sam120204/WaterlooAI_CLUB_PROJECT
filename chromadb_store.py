@@ -1,112 +1,50 @@
-# import chromadb
-# import numpy as np
-# import json
-
-# # Load articles and embeddings
-# with open("pubmed_data.json", "r") as file:
-#     data = json.load(file)
-
-# # Extract article text (using title and other fields as necessary)
-# articles = [f"{article['title']} {article.get('abstract', '')}" for article in data]
-
-# # Load embeddings
-# bert_embeddings = np.load("bert_embeddings.npy")
-
-# # Ensure embeddings dimensions match with your model
-# print(f"BERT Embeddings shape: {bert_embeddings.shape}")
-# assert len(articles) == bert_embeddings.shape[0], "Mismatch between number of articles and embeddings"
-
-# # Initialize ChromaDB client
-# client = chromadb.Client()
-
-# # Get or create a collection
-# collection = client.get_or_create_collection("pubmed_articles")
-
-# # Adding documents and embeddings to the collection
-# try:
-#     for idx, (article, embedding) in enumerate(zip(articles, bert_embeddings)):
-#         doc_id = str(idx)
-#         try:
-#             collection.add(
-#                 documents=[article],
-#                 embeddings=[embedding.tolist()],
-#                 ids=[doc_id]
-#             )
-#             print(f"Added document ID {doc_id} to collection 'pubmed_articles'")
-#         except Exception as e:
-#             print(f"Error adding document ID {doc_id}: {e}")
-# except Exception as e:
-#     print(f"Error adding documents: {e}")
-
-# # Display collections after storing data
-# collections = client.list_collections()
-# print("Collections after storing data:")
-# for col in collections:
-#     print(f"- name='{col.name}' id={col.id}")
-
-# # Check if collection has been populated correctly
-# try:
-#     collection = client.get_collection("pubmed_articles")
-#     sample_data = collection.query(
-#         query_embeddings=[bert_embeddings[0].tolist()],
-#         n_results=5
-#     )
-#     print(f"Sample data from collection 'pubmed_articles': {sample_data}")
-# except Exception as e:
-#     print(f"Error querying collection: {e}")
-import chromadb
 import numpy as np
-import json
+import chromadb
 
-# Load articles and embeddings
-with open("pubmed_data.json", "r") as file:
-    data = json.load(file)
+# Load embeddings from the .npy file
+embeddings = np.load('biobert_embeddings.npy')
 
-# Extract article text (using title and other fields as necessary)
-articles = [f"{article['title']} {article.get('abstract', '')}" for article in data]
+# Ensure embeddings are in the correct shape (number of embeddings, embedding dimension)
+print(f'Shape of embeddings: {embeddings.shape}')
 
-# Load BioBERT embeddings
-biobert_embeddings = np.load("biobert_embeddings.npy")
+# Check the first embedding to confirm it is being loaded correctly
+print(f'First embedding: {embeddings[0]}')
 
-# Ensure embeddings dimensions match with your model
-print(f"BioBERT Embeddings shape: {biobert_embeddings.shape}")
-assert len(articles) == biobert_embeddings.shape[0], "Mismatch between number of articles and embeddings"
+# Create document IDs and prepare documents for upsertion
+documents = [
+    {
+        "id": str(i),  # Ensure the ID is a string
+        "embedding": embeddings[i].tolist(),  # Convert numpy array to list
+        "metadata": {
+            "document_id": i
+        }
+    }
+    for i in range(len(embeddings))
+]
 
-# Initialize ChromaDB client
+# Print the first document to ensure it is correctly formatted
+print(f'First document: {documents[0]}')
+
+# Initialize ChromaDB client and collection
 client = chromadb.Client()
+collection = client.get_or_create_collection(name='biobert_collection')
 
-# Get or create a collection
-collection = client.get_or_create_collection("pubmed_articles")
+# Split documents into separate lists for IDs, embeddings, and metadata
+ids = [doc["id"] for doc in documents]
+embeddings_list = [doc["embedding"] for doc in documents]
+metadata_list = [doc["metadata"] for doc in documents]
 
-# Adding documents and embeddings to the collection
+# Upsert the documents into the collection
 try:
-    for idx, (article, embedding) in enumerate(zip(articles, biobert_embeddings)):
-        doc_id = str(idx)
-        try:
-            collection.add(
-                documents=[article],
-                embeddings=[embedding.tolist()],
-                ids=[doc_id]
-            )
-            print(f"Added document ID {doc_id} to collection 'pubmed_articles'")
-        except Exception as e:
-            print(f"Error adding document ID {doc_id}: {e}")
-except Exception as e:
-    print(f"Error adding documents: {e}")
-
-# Display collections after storing data
-collections = client.list_collections()
-print("Collections after storing data:")
-for col in collections:
-    print(f"- name='{col.name}' id={col.id}")
-
-# Check if collection has been populated correctly
-try:
-    collection = client.get_collection("pubmed_articles")
-    sample_data = collection.query(
-        query_embeddings=[biobert_embeddings[0].tolist()],
-        n_results=5
+    collection.upsert(
+        ids=ids,
+        embeddings=embeddings_list,
+        metadatas=metadata_list
     )
-    print(f"Sample data from collection 'pubmed_articles': {sample_data}")
-except Exception as e:
-    print(f"Error querying collection: {e}")
+    print("Documents have been upserted successfully.")
+except ValueError as e:
+    print(f"ValueError: {e}")
+    # Print document IDs to help debug the issue
+    for doc in documents:
+        print(f"ID: {doc['id']} - Type: {type(doc['id'])}")
+

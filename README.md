@@ -85,10 +85,10 @@ To ensure a smooth workflow, here’s the order in which you should run the scri
     ```
 
 2. **Generate Embeddings**:
-    - Run `generate_bert_embeddings.py` to generate embeddings using BERT and save them to `bert_embeddings.npy`.
+    - Run `generate_biobert_embeddings.py` to generate embeddings using BERT and save them to `bert_embeddings.npy`.
 
     ```sh
-    python generate_bert_embeddings.py
+    python generate_biobert_embeddings.py
     ```
 
 3. **Store Data in ChromaDB**:

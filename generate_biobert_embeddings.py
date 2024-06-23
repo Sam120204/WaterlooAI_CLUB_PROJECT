@@ -26,10 +26,14 @@ if __name__ == "__main__":
     with open('pubmed_data.json', 'r') as f:
         data = json.load(f)
 
-    articles = [f"{article['title']} {article.get('abstract', '')}" for article in data]
+    articles = [f"{article['title']} {article.get('summary', '')}" for article in data]
 
     # Generate BioBERT embeddings
     biobert_embeddings = get_biobert_embeddings(articles)
+
+    # Debug: Print shape and first few embeddings
+    print(f"Generated BioBERT Embeddings shape: {biobert_embeddings.shape}")
+    print(f"First embedding sample: {biobert_embeddings[0][:5]}")
 
     # Save embeddings to a file
     np.save("biobert_embeddings.npy", biobert_embeddings)
