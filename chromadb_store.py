@@ -5,13 +5,16 @@ import json
 # Load articles and embeddings
 with open("pubmed_data.json", "r") as file:
     data = json.load(file)
-articles = [article["summary"] for article in data]
 
-# Assuming you have the embeddings ready in these files
+# Extract article text (using title and other fields as necessary)
+articles = [f"{article['title']} {article.get('abstract', '')}" for article in data]
+
+# Load embeddings
 bert_embeddings = np.load("bert_embeddings.npy")
 
 # Ensure embeddings dimensions match with your model
 print(f"BERT Embeddings shape: {bert_embeddings.shape}")
+assert len(articles) == bert_embeddings.shape[0], "Mismatch between number of articles and embeddings"
 
 # Initialize ChromaDB client
 client = chromadb.Client()
@@ -23,12 +26,15 @@ collection = client.get_or_create_collection("pubmed_articles")
 try:
     for idx, (article, embedding) in enumerate(zip(articles, bert_embeddings)):
         doc_id = str(idx)
-        collection.add(
-            documents=[article],
-            embeddings=[embedding.tolist()],
-            ids=[doc_id]
-        )
-        print(f"Added document ID {doc_id} to collection 'pubmed_articles'")
+        try:
+            collection.add(
+                documents=[article],
+                embeddings=[embedding.tolist()],
+                ids=[doc_id]
+            )
+            print(f"Added document ID {doc_id} to collection 'pubmed_articles'")
+        except Exception as e:
+            print(f"Error adding document ID {doc_id}: {e}")
 except Exception as e:
     print(f"Error adding documents: {e}")
 
