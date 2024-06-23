@@ -66,67 +66,43 @@ pip install -r requirements.txt
 
    Replace `<container_id>` with the ID of the ChromaDB container listed in the output of the `docker ps` command.
 
-## Running the Scripts
+To ensure a smooth workflow, here’s the order in which you should run the scripts:
 
-### 1. Fetching Data from PubMed
+1. **`fetch_pubmed_data.py`**: Fetch the articles and save them to `pubmed_data.json`.
+2. **`embedding_models.py`**: Generate embeddings for the articles using both BERT and BioBERT and save them to `bert_embeddings.json` and `biobert_embeddings.json`.
+3. **`chromadb_store.py`**: Store the articles and their embeddings in ChromaDB.
+4. **`verify_chromaDB.py`**: Verify that the articles and embeddings have been correctly stored in ChromaDB.
 
-The `fetch_pubmed_data.py` script scrapes articles from PubMed based on a specified query.
+### Step-by-Step Instructions:
 
-**Running the Script:**
+1. **Fetch Articles**:
+    - Run `fetch_pubmed_data.py` to fetch articles from PubMed and save them to `pubmed_data.json`.
 
-```sh
-python fetch_pubmed_data.py
-```
+    ```sh
+    python fetch_pubmed_data.py
+    ```
 
-**Output:**
+2. **Generate Embeddings**:
+    - Run `embedding_models.py` to generate embeddings using both BERT and BioBERT, and save them to `bert_embeddings.json` and `biobert_embeddings.json`.
 
-- The script creates a file named `pubmed_data.json` containing the scraped articles.
-- You will see a message in the terminal indicating the number of articles fetched.
+    ```sh
+    python embedding_models.py
+    ```
 
-### 2. Researching Embedding Models
+3. **Store Data in ChromaDB**:
+    - Run `chromadb_store.py` to store the articles and their embeddings in ChromaDB.
 
-The `embedding_models.py` script generates text embeddings using BERT.
+    ```sh
+    python chromadb_store.py
+    ```
 
-**Running the Script:**
+4. **Verify Stored Data**:
+    - Run `verify_chromaDB.py` to verify that the articles and embeddings are correctly stored in ChromaDB.
 
-```sh
-python embedding_models.py
-```
+    ```sh
+    python verify_chromaDB.py
+    ```
 
-**Output:**
-
-- The script prints the embeddings for the sample text in the terminal.
-- Ensure you see a tensor output indicating the embeddings were successfully generated.
-- The script creates a file named `embeddings.json` containing the generated embeddings.
-
-### 3. Using ChromaDB for Vector Storage
-
-The `chromadb_store.py` script demonstrates how to insert and query data in ChromaDB.
-
-**Running the Script:**
-
-```sh
-python chromadb_store.py
-```
-
-**Output:**
-
-- The script prints the results of the insertion and query in the terminal.
-- The output shows the stored documents with their embeddings and metadata.
-
-### 4. Checking ChromaDB Endpoints
-
-The `check_endpoints.py` script checks the status of the ChromaDB server endpoints.
-
-**Running the Script:**
-
-```sh
-python check_endpoints.py
-```
-
-**Output:**
-
-- The script prints the status codes for each endpoint, indicating whether they are accessible.
 
 ## Research and Collaboration
 

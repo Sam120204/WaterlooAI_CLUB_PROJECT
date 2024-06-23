@@ -1,9 +1,10 @@
+# chromadb_store.py
 import chromadb
 import json
 
 def flatten_embeddings(embeddings):
     # Ensure each embedding is a flat list
-    return [item for sublist in embeddings for item in sublist]
+    return embeddings  # Assuming embeddings are already in the correct format
 
 def store_in_chromadb(articles, embeddings):
     # Initialize ChromaDB client
@@ -21,12 +22,9 @@ def store_in_chromadb(articles, embeddings):
     documents = [article['summary'] for article in articles]
     metadatas = [{'title': article['title']} for article in articles]
     
-    # Flatten embeddings
-    flat_embeddings = [flatten_embeddings(embedding) for embedding in embeddings]
-    
     # Insert data into the collection
     collection = client.get_collection(collection_name)
-    collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=flat_embeddings)
+    collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
     
     # Verify insertion
     print("\nInserted documents:")
