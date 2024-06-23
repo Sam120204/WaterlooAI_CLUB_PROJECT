@@ -1,47 +1,50 @@
-# chromadb_store.py
 import chromadb
+import numpy as np
 import json
 
-def flatten_embeddings(embeddings):
-    # Ensure each embedding is a flat list
-    return embeddings  # Assuming embeddings are already in the correct format
+# Load articles and embeddings
+with open("pubmed_data.json", "r") as file:
+    data = json.load(file)
+articles = [article["summary"] for article in data]
 
-def store_in_chromadb(articles, embeddings):
-    # Initialize ChromaDB client
-    client = chromadb.HttpClient(host="localhost", port=8000)
-    
-    # Create a collection
-    collection_name = "pubmed_articles"
-    try:
-        client.create_collection(name=collection_name)
-    except Exception as e:
-        print(f"Collection creation failed: {e}")
-    
-    # Prepare data for insertion
-    ids = [str(i) for i in range(1, len(articles) + 1)]
-    documents = [article['summary'] for article in articles]
-    metadatas = [{'title': article['title']} for article in articles]
-    
-    # Insert data into the collection
-    collection = client.get_collection(collection_name)
-    collection.add(documents=documents, metadatas=metadatas, ids=ids, embeddings=embeddings)
-    
-    # Verify insertion
-    print("\nInserted documents:")
-    for doc_id in ids:
-        doc = collection.get(ids=[doc_id])
-        print(doc)
+# Assuming you have the embeddings ready in these files
+bert_embeddings = np.load("bert_embeddings.npy")
 
-if __name__ == "__main__":
-    # Load the data from pubmed_data.json
-    with open('pubmed_data.json', 'r') as file:
-        articles = json.load(file)
-    
-    # Load the embeddings from embeddings.json
-    with open('embeddings.json', 'r') as file:
-        embeddings = json.load(file)
-    
-    # Store articles and embeddings in ChromaDB
-    store_in_chromadb(articles, embeddings)
-    
-    print("Data and embeddings stored in ChromaDB.")
+# Ensure embeddings dimensions match with your model
+print(f"BERT Embeddings shape: {bert_embeddings.shape}")
+
+# Initialize ChromaDB client
+client = chromadb.Client()
+
+# Get or create a collection
+collection = client.get_or_create_collection("pubmed_articles")
+
+# Adding documents and embeddings to the collection
+try:
+    for idx, (article, embedding) in enumerate(zip(articles, bert_embeddings)):
+        doc_id = str(idx)
+        collection.add(
+            documents=[article],
+            embeddings=[embedding.tolist()],
+            ids=[doc_id]
+        )
+        print(f"Added document ID {doc_id} to collection 'pubmed_articles'")
+except Exception as e:
+    print(f"Error adding documents: {e}")
+
+# Display collections after storing data
+collections = client.list_collections()
+print("Collections after storing data:")
+for col in collections:
+    print(f"- name='{col.name}' id={col.id}")
+
+# Check if collection has been populated correctly
+try:
+    collection = client.get_collection("pubmed_articles")
+    sample_data = collection.query(
+        query_embeddings=[bert_embeddings[0].tolist()],
+        n_results=5
+    )
+    print(f"Sample data from collection 'pubmed_articles': {sample_data}")
+except Exception as e:
+    print(f"Error querying collection: {e}")
