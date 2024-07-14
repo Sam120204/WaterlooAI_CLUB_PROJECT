@@ -5,3 +5,9 @@ torch
 chromadb
 pydantic
 biopython
+fitz
+frontend
+pymupdf
+Retriever
+farm-haystack[inference]
+openai==0.28 
