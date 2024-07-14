@@ -26,6 +26,7 @@ if __name__ == "__main__":
     document_store = InMemoryDocumentStore()
     document_store.write_documents([{"content": doc} for doc in documents])
     
+    #fetch relevant doc chunks based on the query
     retriever = DensePassageRetriever(document_store=document_store, query_embedding_model="facebook/dpr-question_encoder-single-nq-base", passage_embedding_model="facebook/dpr-ctx_encoder-single-nq-base", use_gpu=False)
     
     # Update embeddings for all documents in the document store
