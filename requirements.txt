@@ -11,6 +11,10 @@ pymupdf
 Retriever
 farm-haystack[inference]
 openai==0.28 
+langchain
+langchain-community 
+langchain-core
+# pip install -U langchain-community
 # python -m venv venv
-# .\venv\Scripts\Activate.ps1
+# .\myenv\Scripts\Activate.ps1
 # pip install -r requirements.txt
