@@ -14,6 +14,10 @@ openai==0.28
 langchain
 langchain-community 
 langchain-core
+langgraph
+langchain_anthropic
+crewai
+matplotlib
 # pip install -U langchain-community
 # python -m venv venv
 # .\myenv\Scripts\Activate.ps1
